@@ -1,0 +1,2 @@
+(outbound and udp.DstPort>=50000 and udp.DstPort<=50099 and udp.PayloadLength=74 and udp.Payload32[0]=0x00010046) or
+(outbound and ((udp.DstPort>=50000 and udp.DstPort<=50099) or (udp.DstPort>=19294 and udp.DstPort<=19344)) and udp.PayloadLength>=20 and udp.Payload32[1]=0x2112A442 and udp.Payload[0]<0x40)

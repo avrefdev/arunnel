@@ -1,0 +1,47 @@
+name: Release
+
+# "v1.0.0" gibi bir etiket gönderildiğinde exe'leri derleyip GitHub Releases'a taslak olarak yükler.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: SHA-256 özetleri
+        shell: pwsh
+        run: |
+          Get-FileHash release/*.exe -Algorithm SHA256 |
+            ForEach-Object { "$($_.Hash.ToLower())  $(Split-Path $_.Path -Leaf)" } |
+            Out-File release/SHA256SUMS.txt -Encoding utf8
+
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          body_path: docs/SURUM_NOTLARI.md
+          files: |
+            release/Arunnel.exe
+            release/Arunnel_*_Setup.exe
+            release/SHA256SUMS.txt

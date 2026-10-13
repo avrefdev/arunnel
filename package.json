@@ -1,0 +1,17 @@
+{
+  "name": "arunnel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sadece Discord trafiğini etkileyen DPI aşma aracı",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "icons": "node scripts/make-icons.mjs && tauri icon src-tauri/icons/app.png",
+    "fonts": "node scripts/copy-fonts.mjs",
+    "dev": "tauri dev",
+    "build": "tauri build && node scripts/collect-release.mjs"
+  },
+  "devDependencies": {
+    "@fontsource-variable/inter": "^5.1.0",
+    "@tauri-apps/cli": "^2.1.0"
+  }
+}

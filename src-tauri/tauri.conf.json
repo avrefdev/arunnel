@@ -1,0 +1,47 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Arunnel",
+  "version": "1.0.0",
+  "identifier": "app.arunnel",
+  "build": {
+    "frontendDist": "../ui"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Arunnel",
+        "width": 720,
+        "height": 480,
+        "resizable": false,
+        "maximizable": false,
+        "decorations": false,
+        "shadow": true,
+        "center": true,
+        "visible": false,
+        "backgroundColor": "#09090b"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/icon.ico"],
+    "publisher": "Arunnel",
+    "shortDescription": "Discord erişim aracı",
+    "longDescription": "Sadece Discord trafiğini etkileyen, arka planda çalışan DPI aşma aracı.",
+    "license": "GPL-3.0-or-later",
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper" },
+      "nsis": {
+        "installMode": "perMachine",
+        "languages": ["Turkish", "English"],
+        "displayLanguageSelector": false
+      }
+    }
+  }
+}

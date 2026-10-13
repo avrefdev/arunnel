@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arunnel</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="titlebar" data-tauri-drag-region>
+    <span class="brand" data-tauri-drag-region>Arunnel</span>
+    <div class="win">
+      <button id="win-min" aria-label="Küçült"><svg viewBox="0 0 24 24"><path d="M5 12h14" /></svg></button>
+      <button id="win-close" aria-label="Kapat"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12" /></svg></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav>
+      <button class="nav active" data-page="home" aria-label="Ana sayfa" title="Ana sayfa">
+        <svg viewBox="0 0 24 24"><path d="M7 6a7.75 7.75 0 1 0 10 0" /><path d="M12 4v8" /></svg>
+      </button>
+      <button class="nav" data-page="stats" aria-label="Durum" title="Durum">
+        <svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4" /></svg>
+      </button>
+      <button class="nav" data-page="diag" aria-label="Tanılama" title="Tanılama">
+        <svg viewBox="0 0 24 24"><path d="M6 4H5a2 2 0 0 0-2 2v3.5a5.5 5.5 0 0 0 11 0V6a2 2 0 0 0-2-2h-1" /><path d="M8 15a6 6 0 1 0 12 0v-3" /><path d="M11 3v2M6 3v2" /><circle cx="20" cy="10" r="2" /></svg>
+      </button>
+      <button class="nav" data-page="logs" aria-label="Kayıtlar" title="Kayıtlar">
+        <svg viewBox="0 0 24 24"><path d="m8 9 3 3-3 3M13 15h3" /><rect x="3" y="4" width="18" height="16" rx="2" /></svg>
+      </button>
+      <div class="spacer"></div>
+      <button class="nav" data-page="settings" aria-label="Ayarlar" title="Ayarlar">
+        <svg viewBox="0 0 24 24"><path d="M10.33 4.32c.43-1.76 2.93-1.76 3.35 0a1.72 1.72 0 0 0 2.57 1.07c1.55-.94 3.31.83 2.37 2.37a1.72 1.72 0 0 0 1.07 2.57c1.76.43 1.76 2.93 0 3.35a1.72 1.72 0 0 0-1.07 2.57c.94 1.55-.83 3.31-2.37 2.37a1.72 1.72 0 0 0-2.57 1.07c-.43 1.76-2.93 1.76-3.35 0a1.72 1.72 0 0 0-2.57-1.07c-1.55.94-3.31-.83-2.37-2.37a1.72 1.72 0 0 0-1.07-2.57c-1.76-.43-1.76-2.93 0-3.35a1.72 1.72 0 0 0 1.07-2.57c-.94-1.55.83-3.31 2.37-2.37 1 .61 2.3.07 2.57-1.07z" /><circle cx="12" cy="12" r="3" /></svg>
+      </button>
+    </nav>
+
+    <main>
+      <!-- Ana sayfa -->
+      <section id="page-home" class="page active">
+        <div class="home">
+          <button id="power" class="power" aria-label="Bağlan">
+            <svg class="ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" /></svg>
+            <svg class="icon" viewBox="0 0 24 24"><path d="M7 6a7.75 7.75 0 1 0 10 0" /><path d="M12 4v8" /></svg>
+            <span id="power-label">Bağlan</span>
+          </button>
+          <div class="home-status">
+            <div id="status-title">Bağlı değil</div>
+            <div id="status-sub" class="mono-num"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Durum -->
+      <section id="page-stats" class="page">
+        <h1>Durum</h1>
+        <div class="grid3">
+          <div class="card"><div class="label">Gecikme</div><span class="metric" id="m-ping">—</span> <span class="unit">ms</span></div>
+          <div class="card"><div class="label">Ortalama</div><span class="metric" id="m-avg">—</span> <span class="unit">ms</span></div>
+          <div class="card"><div class="label">Paket kaybı</div><span class="metric" id="m-loss">—</span> <span class="unit">%</span></div>
+          <div class="card span3">
+            <div class="label row"><span>Gecikme geçmişi</span><span id="m-uptime" class="mono-num">00:00</span></div>
+            <svg id="chart" viewBox="0 0 100 60" preserveAspectRatio="none">
+              <line x1="0" y1="59.5" x2="100" y2="59.5" class="axis" />
+              <polyline id="chart-line" points="" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tanılama -->
+      <section id="page-diag" class="page">
+        <h1 class="row">Tanılama <button id="diag-run" class="btn">
+          <svg viewBox="0 0 24 24"><path d="M20 11a8.1 8.1 0 0 0-15.5-2m-.5-4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>
+          Yeniden test et</button></h1>
+        <div class="grid2">
+          <div class="stack" id="diag-services"></div>
+          <div class="stack" id="diag-compat"></div>
+        </div>
+      </section>
+
+      <!-- Kayıtlar -->
+      <section id="page-logs" class="page">
+        <h1 class="row">Kayıtlar <button id="logs-copy" class="link">
+          <svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg>
+          <span>Kopyala</span></button></h1>
+        <div class="card logs" id="logs"></div>
+      </section>
+
+      <!-- Ayarlar -->
+      <section id="page-settings" class="page">
+        <h1>Ayarlar</h1>
+        <div class="stack">
+          <label class="box">Windows ile başlat<input type="checkbox" class="toggle" data-key="start_with_windows" /></label>
+          <label class="box">Discord açılınca bağlan<input type="checkbox" class="toggle" data-key="auto_connect" /></label>
+          <label class="box">Kapatınca tepsiye küçült<input type="checkbox" class="toggle" data-key="close_to_tray" /></label>
+          <div class="box">Servisi kaldır<button id="uninstall" class="link danger">Kaldır</button></div>
+        </div>
+        <div class="version">v1.0.0</div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
