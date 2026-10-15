@@ -1,6 +1,6 @@
 {
   "name": "arunnel",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Sadece Discord trafiğini etkileyen DPI aşma aracı",
   "license": "GPL-3.0-or-later",

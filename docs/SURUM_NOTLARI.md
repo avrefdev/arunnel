@@ -1,10 +1,14 @@
-## Arunnel 1.0.0
+## Arunnel 1.1.0
 
 Türkiye'den Discord'a tek tıkla erişim. Yalnızca Discord trafiğine dokunur.
 
+### Yenilikler
+- **Roblox erişimi**: Ayarlar > Roblox erişimi açılınca Roblox da Discord ile aynı yoldan açılır. Varsayılan olarak kapalıdır.
+- Bağlıyken ayarı açıp kapatmak yeniden bağlanmayı gerektirmez.
+
 ### İndirme
 - **Arunnel.exe**: Kurulumsuz, tek dosya. İndirip çalıştırın.
-- **Arunnel_1.0.0_Setup.exe**: Kurulum sihirbazı (Başlat menüsü kısayolu, Denetim Masası'ndan kaldırma).
+- **Arunnel_1.1.0_Setup.exe**: Kurulum sihirbazı (Başlat menüsü kısayolu, Denetim Masası'ndan kaldırma).
 
 ### Özellikler
 - Tek tuşla bağlanma; 6 farklı yöntemi sırayla dener ve çalışanı hatırlar

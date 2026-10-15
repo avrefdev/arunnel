@@ -5,6 +5,7 @@ Türkiye'den Discord'a tek tıkla erişim. **Yalnızca Discord trafiğine dokunu
 - Tek buton: aç, bağlan, kullan
 - Arka planda çalışır (GoodbyeDPI gibi); pencere kapalıyken de bağlantı sürer
 - Sesli sohbet, kamera ve ekran paylaşımı dahil
+- İsteğe bağlı Roblox erişimi (Ayarlar > Roblox erişimi)
 - VPN değildir, IP adresiniz değişmez, ping artmaz
 - Kurulumlu ve kurulumsuz (taşınabilir) sürüm
 
@@ -14,7 +15,7 @@ Türkiye'den Discord'a tek tıkla erişim. **Yalnızca Discord trafiğine dokunu
 
 | Dosya | Açıklama |
 |---|---|
-| `Arunnel_1.0.0_Setup.exe` | Kurulum sihirbazı. Başlat menüsüne ve masaüstüne kısayol ekler. |
+| `Arunnel_1.1.0_Setup.exe` | Kurulum sihirbazı. Başlat menüsüne ve masaüstüne kısayol ekler. |
 | `Arunnel.exe` | Kurulumsuz sürüm. Tek dosya, istediğiniz yere koyup çalıştırın. |
 
 Gereksinim: Windows 10/11 (64 bit). Windows 11'de her şey hazırdır; eski Windows 10 sürümlerinde kurulum sihirbazı gerekirse WebView2'yi kendisi indirir.
