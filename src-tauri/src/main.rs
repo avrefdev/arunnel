@@ -101,13 +101,13 @@ fn set_logon_task(on: bool) {
 }
 
 async fn do_connect(app: AppHandle) -> Result<(), String> {
-    let (last, autostart) = {
+    let (last, autostart, roblox) = {
         let c = core(&app);
         let c = c.lock().unwrap();
         if matches!(c.status, Status::Connecting | Status::Connected) {
             return Ok(());
         }
-        (c.settings.last_profile, c.settings.start_with_windows)
+        (c.settings.last_profile, c.settings.start_with_windows, c.settings.roblox)
     };
     set_status(&app, Status::Connecting);
     logs::info("Bağlantı başlatılıyor");
@@ -115,8 +115,8 @@ async fn do_connect(app: AppHandle) -> Result<(), String> {
     tauri::async_runtime::spawn_blocking(conflicts::clean).await.ok();
     tauri::async_runtime::spawn_blocking(engine::extract).await.ok();
 
-    match dns::apply().await {
-        Ok(n) => logs::info(format!("{n} Discord adresi güvenli DNS ile çözüldü")),
+    match dns::apply(roblox).await {
+        Ok(n) => logs::info(format!("{n} adres güvenli DNS ile çözüldü")),
         Err(e) => {
             logs::error(e.clone());
             set_status(&app, Status::Error);
@@ -128,7 +128,7 @@ async fn do_connect(app: AppHandle) -> Result<(), String> {
     let order: Vec<usize> = std::iter::once(last % n).chain((0..n).filter(|&i| i != last % n)).collect();
     for p in order {
         logs::info(format!("Profil {} deneniyor", p + 1));
-        let started = tauri::async_runtime::spawn_blocking(move || engine::start(p, autostart))
+        let started = tauri::async_runtime::spawn_blocking(move || engine::start(p, autostart, roblox))
             .await
             .map_err(|e| e.to_string())
             .and_then(|r| r);
@@ -309,9 +309,40 @@ fn set_setting(app: AppHandle, key: String, value: bool) {
         }
         "auto_connect" => c.settings.auto_connect = value,
         "close_to_tray" => c.settings.close_to_tray = value,
+        "roblox" => {
+            c.settings.roblox = value;
+            if c.status == Status::Connected {
+                let profile = c.profile.unwrap_or(c.settings.last_profile);
+                let autostart = c.settings.start_with_windows;
+                let app = app.clone();
+                tauri::async_runtime::spawn(apply_roblox(app, profile, autostart, value));
+            }
+        }
         _ => return,
     }
     settings::save(&c.settings);
+}
+
+async fn apply_roblox(app: AppHandle, profile: usize, autostart: bool, on: bool) {
+    set_status(&app, Status::Connecting);
+    if let Err(e) = dns::apply(on).await {
+        logs::warn(e);
+    }
+    let started = tauri::async_runtime::spawn_blocking(move || engine::start(profile, autostart, on))
+        .await
+        .map_err(|e| e.to_string())
+        .and_then(|r| r);
+    match started {
+        Ok(()) => {
+            set_status(&app, Status::Connected);
+            logs::ok(if on { "Roblox erişimi açıldı" } else { "Roblox erişimi kapatıldı" });
+        }
+        Err(e) => {
+            logs::error(e);
+            dns::clear();
+            set_status(&app, Status::Error);
+        }
+    }
 }
 
 #[tauri::command]
@@ -348,10 +379,10 @@ async fn background(app: AppHandle) {
     loop {
         tokio::time::sleep(Duration::from_secs(2)).await;
         tick += 1;
-        let (status, auto) = {
+        let (status, auto, roblox) = {
             let c = core(&app);
             let c = c.lock().unwrap();
-            (c.status, c.settings.auto_connect)
+            (c.status, c.settings.auto_connect, c.settings.roblox)
         };
 
         if status == Status::Connected {
@@ -374,7 +405,7 @@ async fn background(app: AppHandle) {
             }
             // Discord adresleri zamanla değişebilir; 30 dakikada bir tazele.
             if tick % 900 == 0 {
-                if let Err(e) = dns::apply().await {
+                if let Err(e) = dns::apply(roblox).await {
                     logs::warn(e);
                 }
             }
@@ -454,8 +485,9 @@ fn main() {
                 core(&handle).lock().unwrap().profile = Some(s.last_profile);
                 set_status(&handle, Status::Connected);
                 logs::ok(format!("Servis zaten çalışıyor · Profil {}", s.last_profile + 1));
-                tauri::async_runtime::spawn(async {
-                    if let Err(e) = dns::apply().await {
+                let roblox = s.roblox;
+                tauri::async_runtime::spawn(async move {
+                    if let Err(e) = dns::apply(roblox).await {
                         logs::warn(e);
                     }
                 });

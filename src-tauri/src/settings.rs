@@ -11,11 +11,12 @@ pub struct Settings {
     pub close_to_tray: bool,
     /// Son çalışan strateji; bir sonraki bağlantıda önce bu denenir.
     pub last_profile: usize,
+    pub roblox: bool,
 }
 
 impl Default for Settings {
     fn default() -> Self {
-        Self { start_with_windows: true, auto_connect: false, close_to_tray: true, last_profile: 0 }
+        Self { start_with_windows: true, auto_connect: false, close_to_tray: true, last_profile: 0, roblox: false }
     }
 }
 

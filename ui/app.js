@@ -184,7 +184,7 @@ setInterval(poll, 1000);
 function mockInvoke(cmd, args) {
   const m = (window.__mock ??= {
     st: { status: "idle", since: 0, history: [] },
-    settings: { start_with_windows: true, auto_connect: false, close_to_tray: true },
+    settings: { start_with_windows: true, auto_connect: false, close_to_tray: true, roblox: false },
     logs: [{ time: "12:00:00", msg: "Servis hazır", level: "info" }],
   });
   const log = (msg, level = "info") =>

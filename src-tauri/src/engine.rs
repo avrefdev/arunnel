@@ -20,6 +20,7 @@ const FILES: &[(&str, &[u8])] = &[
     ("WinDivert64.sys", include_bytes!("../engine/WinDivert64.sys")),
     ("discord.txt", include_bytes!("../engine/discord.txt")),
     ("voice.txt", include_bytes!("../engine/voice.txt")),
+    ("roblox.txt", include_bytes!("../engine/roblox.txt")),
 ];
 
 /// Sırayla denenen TLS stratejileri. Operatörden operatöre hangisinin
@@ -43,9 +44,12 @@ fn q(p: PathBuf) -> String {
     if s.contains(' ') { format!("\\\"{s}\\\"") } else { s }
 }
 
-fn command_line(profile: usize) -> String {
+fn command_line(profile: usize, roblox: bool) -> String {
     let d = dir();
-    let hosts = q(d.join("discord.txt"));
+    let mut hosts = q(d.join("discord.txt"));
+    if roblox {
+        hosts = format!("{hosts} --hostlist={}", q(d.join("roblox.txt")));
+    }
     let voice = q(d.join("voice.txt"));
     let tls = PROFILES[profile % PROFILES.len()];
     [
@@ -158,9 +162,9 @@ pub fn release_foreign_driver() -> Result<(), String> {
 }
 
 /// Servisi verilen strateji ile (yeniden) başlatır.
-pub fn start(profile: usize, autostart: bool) -> Result<(), String> {
+pub fn start(profile: usize, autostart: bool, roblox: bool) -> Result<(), String> {
     release_foreign_driver()?;
-    let bin = command_line(profile);
+    let bin = command_line(profile, roblox);
     let start_type = if autostart { "auto" } else { "demand" };
     if state() == ServiceState::Missing {
         let out = util::run(

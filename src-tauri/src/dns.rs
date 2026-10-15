@@ -37,6 +37,43 @@ pub const DOMAINS: &[&str] = &[
     "dis.gd",
 ];
 
+pub const ROBLOX_DOMAINS: &[&str] = &[
+    "roblox.com",
+    "www.roblox.com",
+    "web.roblox.com",
+    "auth.roblox.com",
+    "apis.roblox.com",
+    "users.roblox.com",
+    "accountsettings.roblox.com",
+    "accountinformation.roblox.com",
+    "friends.roblox.com",
+    "presence.roblox.com",
+    "games.roblox.com",
+    "gamejoin.roblox.com",
+    "develop.roblox.com",
+    "thumbnails.roblox.com",
+    "avatar.roblox.com",
+    "catalog.roblox.com",
+    "economy.roblox.com",
+    "inventory.roblox.com",
+    "groups.roblox.com",
+    "badges.roblox.com",
+    "chat.roblox.com",
+    "notifications.roblox.com",
+    "realtime-signalr.roblox.com",
+    "assetdelivery.roblox.com",
+    "clientsettings.roblox.com",
+    "clientsettingscdn.roblox.com",
+    "ecsv2.roblox.com",
+    "ephemeralcounters.api.roblox.com",
+    "setup.rbxcdn.com",
+    "tr.rbxcdn.com",
+    "js.rbxcdn.com",
+    "css.rbxcdn.com",
+    "images.rbxcdn.com",
+    "static.rbxcdn.com",
+];
+
 const RESOLVERS: &[&str] = &["https://1.1.1.1/dns-query", "https://8.8.8.8/resolve"];
 
 #[derive(Deserialize)]
@@ -117,10 +154,11 @@ fn write_hosts(content: &str) -> std::io::Result<()> {
 }
 
 /// Discord alan adlarını DoH ile çözüp hosts dosyasına yazar.
-pub async fn apply() -> Result<usize, String> {
+pub async fn apply(roblox: bool) -> Result<usize, String> {
     let client = client();
     let mut lines = Vec::new();
-    for name in DOMAINS {
+    let extra: &[&str] = if roblox { ROBLOX_DOMAINS } else { &[] };
+    for name in DOMAINS.iter().chain(extra) {
         if let Some(ip) = resolve(&client, name).await {
             lines.push(format!("{ip} {name}"));
         }

@@ -19,7 +19,8 @@ arunnel/
 │   ├── engine/              exe'ye gömülen motor dosyaları
 │   │   ├── winws.exe, cygwin1.dll, WinDivert.dll, WinDivert64.sys
 │   │   ├── discord.txt      Müdahale edilecek alan adları (alt alan adları dahil)
-│   │   └── voice.txt        Discord ses paketleri için çekirdek filtresi
+│   │   ├── voice.txt        Discord ses paketleri için çekirdek filtresi
+│   │   └── roblox.txt       Roblox alan adları (Ayarlar > Roblox erişimi açıkken)
 │   ├── icons/               Uygulama ve tepsi ikonları (scripts/make-icons.mjs üretir)
 │   ├── arunnel.exe.manifest Yönetici izni isteyen Windows manifesti
 │   └── tauri.conf.json      Pencere ve kurulum sihirbazı ayarları
@@ -43,6 +44,8 @@ winws.exe --wf-tcp=443 --wf-udp=443 --wf-raw-part=@voice.txt
   --filter-udp=443 --hostlist=discord.txt --dpi-desync=fake --dpi-desync-repeats=6 --new
   --filter-udp=50000-50099,19294-19344 --filter-l7=discord,stun --dpi-desync=fake --dpi-desync-repeats=6
 ```
+
+Ayarlarda "Roblox erişimi" açıksa her iki filtreye `--hostlist=roblox.txt` eklenir ve Roblox adresleri de DoH ile çözülüp hosts'a yazılır. Bağlıyken ayar değişirse servis aynı profille yeniden başlatılır.
 
 `--hostlist` eşleşmeyen bağlantılar winws'ten değiştirilmeden geçer. Ses filtresi çekirdek seviyesinde yalnızca Discord'un IP keşif ve STUN paketlerini yakalar; oyun trafiği hiç winws'e ulaşmaz.
 
