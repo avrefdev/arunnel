@@ -9,6 +9,11 @@ pub const SERVICES: &[(&str, &str)] = &[
     ("Sesli sohbet", "https://latency.discord.media/"),
 ];
 
+#[cfg(windows)]
+const PING_TARGET: &str = "discord.com:443";
+#[cfg(target_os = "macos")]
+const PING_TARGET: &str = "discord.com:80";
+
 fn client(timeout: Duration) -> reqwest::Client {
     reqwest::Client::builder()
         .timeout(timeout)
@@ -42,7 +47,7 @@ pub async fn ping() -> Option<u32> {
     let start = Instant::now();
     let conn = tokio::time::timeout(
         Duration::from_secs(3),
-        tokio::net::TcpStream::connect("discord.com:443"),
+        tokio::net::TcpStream::connect(PING_TARGET),
     )
     .await;
     match conn {

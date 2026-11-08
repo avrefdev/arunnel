@@ -5,6 +5,7 @@ Arunnel aşağıdaki açık kaynak bileşenleri içerir. `src-tauri/engine/` kla
 | Bileşen | Dosya | Lisans | Kaynak |
 |---|---|---|---|
 | zapret (winws) | `winws.exe` | MIT | https://github.com/bol-van/zapret |
+| zapret (tpws, macOS) | `tpws` (derlemede `scripts/fetch-tpws.sh` indirir) | MIT | https://github.com/bol-van/zapret |
 | WinDivert | `WinDivert.dll`, `WinDivert64.sys` | LGPL-3.0 veya GPL-2.0 (çift lisans) | https://github.com/basil00/WinDivert |
 | Cygwin DLL | `cygwin1.dll` | LGPL-3.0 (Cygwin bağlantı istisnası ile) | https://cygwin.com/git/newlib-cygwin.git |
 | Tauri | uygulama çatısı | MIT / Apache-2.0 | https://github.com/tauri-apps/tauri |
@@ -23,3 +24,9 @@ Dağıtılan motor dosyalarının resmi sürümlerle aynı olduğunu doğrulamak
 ```
 
 Bu dosyalar zapret'in Windows sürüm paketinden (`binaries/windows-x86_64`) alınmıştır.
+
+macOS sürümündeki `tpws`, zapret v72.13 paketinin `binaries/mac64/tpws` dosyasıdır:
+
+```
+441524a76f52597a0e5c816d25ed1adfd93e5c34cc56c56e0dc00533929d1761  tpws
+```

@@ -61,3 +61,14 @@ Yeni bir profil eklemek için `engine.rs` içindeki `PROFILES` dizisine satır e
 ## Arayüzü tarayıcıda denemek
 
 `ui/index.html` herhangi bir statik sunucuyla açılabilir. Tauri bulunamazsa `app.js` içindeki sahte arka uç devreye girer; bağlanma, grafik ve tanılama sahte verilerle çalışır.
+
+## macOS
+
+macOS'ta WinDivert olmadığı için motor zapret'in `tpws` aracıdır. Platforma özel kod `src-tauri/src/mac/` ve `src-tauri/engine/macos/` içindedir.
+
+- İlk bağlanmada `install.sh` yönetici şifresiyle bir kere çalışır: dosyaları `/Library/Application Support/Arunnel` altına koyar ve `app.arunnel.apply` adlı bir LaunchDaemon kurar.
+- Uygulama root olmadan çalışır. İsteğini `ctl/request` dosyasına yazar; launchd bu klasör değişince `apply.sh`'ı root olarak çalıştırır, sonuç `ack` dosyasına yazılır.
+- `apply.sh` hosts bloğunu yazar, `com.apple/arunnel` pf anchor'ına yalnızca Discord IP'lerini 127.0.0.1:10443'e yönlendiren kuralları yükler ve `tpws`'i seçilen profille başlatır. Bu IP'lere giden QUIC (UDP 443) engellenir, böylece Discord TCP'ye düşer.
+- `/etc/pf.conf` değiştirilmez. Bağlantı kesilince anchor boşaltılır ve pf referansı bırakılır.
+- "Mac ile başlat" açıkken `~/Library/LaunchAgents/app.arunnel.plist` eklenir; bağlıyken yeniden başlatılırsa motor açılışta kendiliğinden kalkar.
+- Ses (UDP) paketlerine macOS'ta müdahale edilemez.

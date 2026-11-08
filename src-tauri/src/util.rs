@@ -4,6 +4,8 @@ use std::process::{Command, Output};
 
 const CREATE_NO_WINDOW: u32 = 0x0800_0000;
 
+pub const DISCORD: &str = "discord.exe";
+
 /// Konsol penceresi açmadan bir sistem komutu çalıştırır.
 pub fn run(program: &str, raw_args: &str) -> std::io::Result<Output> {
     Command::new(program)

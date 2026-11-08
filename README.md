@@ -17,6 +17,7 @@ Türkiye'den Discord'a tek tıkla erişim. **Yalnızca Discord trafiğine dokunu
 |---|---|
 | `Arunnel_1.1.0_Setup.exe` | Kurulum sihirbazı. Başlat menüsüne ve masaüstüne kısayol ekler. |
 | `Arunnel.exe` | Kurulumsuz sürüm. Tek dosya, istediğiniz yere koyup çalıştırın. |
+| `Arunnel_1.1.0_macOS.dmg` | macOS sürümü (Apple Silicon ve Intel). |
 
 Gereksinim: Windows 10/11 (64 bit). Windows 11'de her şey hazırdır; eski Windows 10 sürümlerinde kurulum sihirbazı gerekirse WebView2'yi kendisi indirir.
 
@@ -27,6 +28,14 @@ Gereksinim: Windows 10/11 (64 bit). Windows 11'de her şey hazırdır; eski Wind
 3. Discord'u açın.
 
 Pencereyi kapatınca uygulama saat yanındaki tepsiye küçülür; bağlantı devam eder. Tepsi ikonu yeşilse bağlısınız.
+
+### macOS
+
+1. dmg'yi açıp Arunnel'i Uygulamalar klasörüne sürükleyin.
+2. Uygulama imzasız olduğu için ilk açılışta macOS engeller. Sistem Ayarları → Gizlilik ve Güvenlik → "Yine de Aç" deyin.
+3. İlk bağlanmada Mac şifrenizi ister. Bağlantı bileşeni bir kere kurulur, sonra tekrar sormaz.
+
+macOS'ta motor olarak zapret'in `tpws` aracı ve sistemin `pf` güvenlik duvarı kullanılır. Yalnızca Discord (ve açıksa Roblox) adreslerine giden bağlantılar yönlendirilir. macOS ses paketlerine müdahale etmeye izin vermediği için sesli sohbetin bu yöntemle aşılması yoktur; operatörünüz sesi de engelliyorsa macOS'ta ses çalışmayabilir.
 
 ## Antivirüs uyarısı hakkında
 

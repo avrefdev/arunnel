@@ -13,6 +13,7 @@ pub struct Entry {
 static LOGS: Mutex<VecDeque<Entry>> = Mutex::new(VecDeque::new());
 const MAX: usize = 300;
 
+#[cfg(windows)]
 fn now() -> String {
     // Yerel saat için chrono gibi bir bağımlılık eklemek yerine doğrudan Windows API'si.
     let mut st = unsafe { std::mem::zeroed::<SystemTime>() };
@@ -20,6 +21,7 @@ fn now() -> String {
     format!("{:02}:{:02}:{:02}", st.hour, st.minute, st.second)
 }
 
+#[cfg(windows)]
 #[repr(C)]
 struct SystemTime {
     year: u16,
@@ -32,9 +34,20 @@ struct SystemTime {
     ms: u16,
 }
 
+#[cfg(windows)]
 #[link(name = "kernel32")]
 extern "system" {
     fn GetLocalTime(st: *mut SystemTime);
+}
+
+#[cfg(target_os = "macos")]
+fn now() -> String {
+    let mut tm = unsafe { std::mem::zeroed::<libc::tm>() };
+    unsafe {
+        let t = libc::time(std::ptr::null_mut());
+        libc::localtime_r(&t, &mut tm);
+    }
+    format!("{:02}:{:02}:{:02}", tm.tm_hour, tm.tm_min, tm.tm_sec)
 }
 
 fn push(level: &'static str, msg: String) {

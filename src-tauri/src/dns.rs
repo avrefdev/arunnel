@@ -4,11 +4,14 @@
 //! şifreli DNS (DoH) ile çözüp hosts dosyasına işaretli bir blok olarak yazarız.
 //! Sistem DNS ayarlarına dokunulmaz; bağlantı kesilince blok silinir.
 
+#[cfg(windows)]
 use crate::{logs, util};
 use serde::Deserialize;
 use std::time::Duration;
 
+#[cfg(windows)]
 const BEGIN: &str = "# >>> Arunnel (otomatik eklendi, elle düzenlemeyin)";
+#[cfg(windows)]
 const END: &str = "# <<< Arunnel";
 
 pub const DOMAINS: &[&str] = &[
@@ -115,12 +118,14 @@ async fn resolve(client: &reqwest::Client, name: &str) -> Option<String> {
     None
 }
 
+#[cfg(windows)]
 fn hosts_path() -> std::path::PathBuf {
     let root = std::env::var("SystemRoot").unwrap_or_else(|_| r"C:\Windows".into());
     std::path::PathBuf::from(root).join(r"System32\drivers\etc\hosts")
 }
 
 /// Hosts içeriğinden Arunnel bloğunu çıkarır.
+#[cfg(windows)]
 fn strip_block(content: &str) -> String {
     let mut out = Vec::new();
     let mut inside = false;
@@ -139,6 +144,7 @@ fn strip_block(content: &str) -> String {
     out.join("\r\n")
 }
 
+#[cfg(windows)]
 fn write_hosts(content: &str) -> std::io::Result<()> {
     let path = hosts_path();
     // Bazı sistemlerde hosts salt okunur işaretli olur.
@@ -154,6 +160,7 @@ fn write_hosts(content: &str) -> std::io::Result<()> {
 }
 
 /// Discord alan adlarını DoH ile çözüp hosts dosyasına yazar.
+#[cfg(windows)]
 pub async fn apply(roblox: bool) -> Result<usize, String> {
     let client = client();
     let mut lines = Vec::new();
@@ -173,11 +180,13 @@ pub async fn apply(roblox: bool) -> Result<usize, String> {
     Ok(lines.len())
 }
 
+#[cfg(windows)]
 const DISCORD_ZONES: &[&str] = &[
     "discord.com", "discord.gg", "discord.media", "discordapp.com", "discordapp.net",
     "discordcdn.com", "discordstatus.com", "dis.gd",
 ];
 
+#[cfg(windows)]
 fn is_discord_host(host: &str) -> bool {
     let h = host.to_lowercase();
     DISCORD_ZONES.iter().any(|z| h == *z || h.ends_with(&format!(".{z}")))
@@ -185,6 +194,7 @@ fn is_discord_host(host: &str) -> bool {
 
 /// Başka araçların hosts dosyasına eklediği (Arunnel bloğu dışındaki) Discord
 /// kayıtlarını siler. Eski IP'ler Discord'un bağlanmasını bozar. Silinen satır sayısını döndürür.
+#[cfg(windows)]
 pub fn remove_foreign_entries() -> usize {
     let Ok(current) = std::fs::read_to_string(hosts_path()) else { return 0 };
     let mut out = Vec::new();
@@ -219,6 +229,7 @@ pub fn remove_foreign_entries() -> usize {
 }
 
 /// Arunnel'in hosts dosyasına eklediği satırları kaldırır.
+#[cfg(windows)]
 pub fn clear() {
     let Ok(current) = std::fs::read_to_string(hosts_path()) else { return };
     if !current.contains(BEGIN) {
@@ -228,5 +239,36 @@ pub fn clear() {
     content.push_str("\r\n");
     if let Err(e) = write_hosts(&content) {
         logs::warn(format!("hosts temizlenemedi: {e}"));
+    }
+}
+
+#[cfg(target_os = "macos")]
+pub async fn apply(roblox: bool) -> Result<usize, String> {
+    let client = client();
+    let mut lines = Vec::new();
+    let extra: &[&str] = if roblox { ROBLOX_DOMAINS } else { &[] };
+    for name in DOMAINS.iter().chain(extra) {
+        if let Some(ip) = resolve(&client, name).await {
+            lines.push(format!("{ip} {name}"));
+        }
+    }
+    if lines.is_empty() {
+        return Err("Güvenli DNS'e ulaşılamadı".into());
+    }
+    let n = lines.len();
+    tauri::async_runtime::spawn_blocking(move || crate::ctl::update(true, |r| r.hosts = lines))
+        .await
+        .map_err(|e| e.to_string())?
+        .map_err(|e| format!("hosts yazılamadı: {e}"))?;
+    Ok(n)
+}
+
+#[cfg(target_os = "macos")]
+pub fn clear() {
+    if crate::ctl::current().hosts.is_empty() {
+        return;
+    }
+    if let Err(e) = crate::ctl::update(true, |r| r.hosts.clear()) {
+        crate::logs::warn(format!("hosts temizlenemedi: {e}"));
     }
 }

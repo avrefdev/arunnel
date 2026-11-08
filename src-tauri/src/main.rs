@@ -1,11 +1,17 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+#[cfg_attr(target_os = "macos", path = "mac/conflicts.rs")]
 mod conflicts;
+#[cfg(target_os = "macos")]
+#[path = "mac/ctl.rs"]
+mod ctl;
 mod dns;
+#[cfg_attr(target_os = "macos", path = "mac/engine.rs")]
 mod engine;
 mod logs;
 mod probe;
 mod settings;
+#[cfg_attr(target_os = "macos", path = "mac/util.rs")]
 mod util;
 
 use serde::Serialize;
@@ -85,6 +91,7 @@ fn show_window(app: &AppHandle) {
     }
 }
 
+#[cfg(windows)]
 fn set_logon_task(on: bool) {
     if on {
         let exe = std::env::current_exe().unwrap_or_default();
@@ -98,6 +105,11 @@ fn set_logon_task(on: bool) {
     } else {
         let _ = util::run("schtasks.exe", r#"/Delete /TN "Arunnel" /F"#);
     }
+}
+
+#[cfg(target_os = "macos")]
+fn set_logon_task(on: bool) {
+    util::set_login_item(on);
 }
 
 async fn do_connect(app: AppHandle) -> Result<(), String> {
@@ -412,7 +424,7 @@ async fn background(app: AppHandle) {
         }
 
         if tick % 2 == 0 {
-            let open = util::process_names().iter().any(|n| n == "discord.exe");
+            let open = util::process_names().iter().any(|n| n == util::DISCORD);
             if open && !discord_was_open && auto && matches!(status, Status::Idle | Status::Error) {
                 logs::info("Discord açıldı, otomatik bağlanılıyor");
                 let _ = do_connect(app.clone()).await;
@@ -476,6 +488,7 @@ fn main() {
             let handle = app.handle().clone();
             build_tray(&handle)?;
 
+            #[cfg(windows)]
             engine::extract();
             let s = core(&handle).lock().unwrap().settings.clone();
             set_logon_task(s.start_with_windows);

@@ -4,5 +4,6 @@
 *.sys binary
 *.png binary
 *.ico binary
+*.icns binary
 *.woff2 binary
 src-tauri/engine/*.txt text eol=crlf

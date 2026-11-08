@@ -176,6 +176,9 @@ $("uninstall").addEventListener("click", () => {
 });
 
 // ---------- Başlat ----------
+if (navigator.userAgent.includes("Mac")) {
+  document.querySelector('[data-key="start_with_windows"]').parentElement.firstChild.textContent = "Mac ile başlat";
+}
 loadSettings();
 poll();
 setInterval(poll, 1000);
